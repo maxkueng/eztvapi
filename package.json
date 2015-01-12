@@ -1,0 +1,29 @@
+{
+  "name": "eztvapi",
+  "version": "0.0.1",
+  "description": "A client for the Popcorn TV shows API, eztvapi.re",
+  "keywords": [
+    "eztv",
+    "eztvapi",
+    "popcorn",
+    "popcorntime"
+  ],
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/maxkueng/eztvapi.git"
+  },
+  "dependencies": {
+    "request": "^2.51.0",
+    "through2": "^0.6.3",
+    "timetrickle": "^0.1.1"
+  },
+  "devDependencies": {},
+  "author": "Max Kueng <me@maxkueng.com> (http://maxkueng.com/)",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/maxkueng/eztvapi/raw/master/LICENSE"
+    }
+  ]
+}
