@@ -9,27 +9,37 @@ A client for the [Popcorn TV Shows API][popcornapi] (eztvapi.re).
 npm install eztvapi --save
 ```
 
-## Usage
+## API
 
-### Global settings
+To see what the result of each function looks like check out the [Popcorn API dosc][popcornapi-docs].
 
-The client has build-in rate limiting functionality. By default it limits API calls to one request per second. You can change it by altering the exposed settings.
+### eztvapi([options])
 
-Change it to 10 requests per minute, for example:
+Create a new object instance of the API client.
+
+The client has build-in rate limiting functionality. By default it limits API calls to one request per second. You can change it by passing it the right options.
 
 ```js
-var eztv = require('eztvapi');
+var eztvapi = require('eztvapi');
 
-eztv.API_LIMIT_REQUESTS = 10;    // 10 requests
-eztv.API_LIMIT_INTERVAL = 60000; // per 60000 milliseconds (1 minute)
+var eztv = eztvapi({
+  apiLimitRequests: 10,    // 10 requests
+  apiLimitInterval: 60000  // per minute
+});
 ```
 
-### Get TV Shows
+#### `options`
+
+ - `apiUrl` *(optional; default: eztvapi.re)*: The base URL of the API.
+ - `apiLimitRequests` *(optional; default: 1)*: The maximum number of requests per a given interval.
+ - `apiLimitInterval` *(optional; default: 1000)*: The duration in milliseconds
+
+### eztv.getShows(page, callback)
 
 Get a list of TV shows (paginated, 50 per page).
 
 ```js
-var eztv = require('eztvapi');
+var eztv = require('eztvapi')();
 var page = 1;
 
 eztv.getShows(page, function (err, shows) {
@@ -39,12 +49,12 @@ eztv.getShows(page, function (err, shows) {
 });
 ```
 
-### Get a Stream of All TV Shows
+### stream = eztv.createShowsStream()
 
 Create a stream that emits every show.
 
 ```js
-var eztv = require('eztvapi');
+var eztv = require('eztvapi')();
 
 var stream = eztv.createShowsStream();
 
@@ -58,12 +68,12 @@ stream.on('end', function () {
 
 ```
 
-### Get Information about a Show
+### eztv.getShow(imdb_id, callback)
 
 Get information about a show including episodes and seasons by its IMDB ID (`imdb_id`).
 
 ```js
-var eztv = require('eztvapi');
+var eztv = require('eztvapi')();
 var imdbId = 'tt0944947';
 
 eztv.getShow(imdbId, function (err, show) {
@@ -81,3 +91,4 @@ MIT
 
 
 [popcornapi]: https://github.com/popcorn-official/popcorn-api
+[popcornapi-docs]: https://github.com/popcorn-official/popcorn-api/blob/master/README.md
