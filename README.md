@@ -11,13 +11,13 @@ npm install eztvapi --save
 
 ## API
 
-To see what the result of each function looks like check out the [Popcorn API dosc][popcornapi-docs].
+To see what the result of each function looks like check out the [Popcorn API docs][popcornapi-docs].
 
 ### eztvapi([options])
 
-Create a new object instance of the API client.
+Create an API client object.
 
-The client has build-in rate limiting functionality. By default it limits API calls to one request per second. You can change it by passing it the right options.
+The client has built-in rate limiting functionality. By default it limits API calls to one request per second. You can change it by passing the right options.
 
 ```js
 var eztvapi = require('eztvapi');
@@ -30,7 +30,7 @@ var eztv = eztvapi({
 
 #### `options`
 
- - `apiUrl` *(optional; default: eztvapi.re)*: The base URL of the API.
+ - `apiUrl` *(optional; default: http://eztvapi.re)*: The base URL of the API. Note that there is no slash at the end.
  - `apiLimitRequests` *(optional; default: 1)*: The maximum number of requests per a given interval.
  - `apiLimitInterval` *(optional; default: 1000)*: The duration in milliseconds
 
@@ -68,7 +68,22 @@ stream.on('end', function () {
 
 ```
 
-### eztv.getShow(imdb_id, callback)
+```js
+var through = require('through2').obj;
+var eztv = require('eztvapi')();
+
+var shows = eztv.createShowsStream();
+
+var log = through(function (show, encoding, callback) {
+  console.log(show.title);
+  callback();
+});
+
+shows
+  .pipe(log);
+```
+
+### eztv.getShow(imdbId, callback)
 
 Get information about a show including episodes and seasons by its IMDB ID (`imdb_id`).
 
