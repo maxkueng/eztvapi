@@ -28,7 +28,6 @@ function eztvapi (options) {
 				if (response.statusCode !== 200) { return callback(new Error('Request failed')); }
 				if (!body) { return callback(new Error('No content')); }
 
-				console.log(callback);
 				callback(null, body);
 			});
 		});
