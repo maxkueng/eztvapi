@@ -1,6 +1,6 @@
 {
   "name": "eztvapi",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A client for the Popcorn TV shows API, eztvapi.re",
   "keywords": [
     "eztv",
