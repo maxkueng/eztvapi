@@ -1,2 +1,4 @@
-/node_modules
-test.js
+build
+.nyc_output
+coverage
+node_modules

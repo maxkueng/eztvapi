@@ -1,109 +1,260 @@
 eztvapi
 =======
 
-A client for the [Popcorn TV Shows API][popcornapi] (eztvapi.re).
+A Node.js client for the [Popcorn API][popcornapi-docs] used in PopcornTime.
+
+ - [Features](#features)
+ - [Installation](#installation)
+ - [Example](#example)
+ - [Documentation](#documentation)
+   - [Types](#types)
+   - [API](#api)
+ - [License](#license)
+
+## Features
+
+ - Promise-based API
+ - Built-in rate limiting
+ - Flow typed
+ - Easy to use
 
 ## Installation
 
 ```sh
-npm install eztvapi --save
+npm install --save eztvapi
 ```
 
-## API
+## Example
 
-To see what the result of each function looks like check out the [Popcorn API docs][popcornapi-docs].
-
-### eztvapi([options])
-
-Create an API client object.
-
-The client has built-in rate limiting functionality. By default it limits API calls to one request per second. You can change it by passing the right options.
+Here's an example how to fetch all the shows with all the episodes.
 
 ```js
-var eztvapi = require('eztvapi');
+import * as eztvapi from 'eztvapi';
 
-var eztv = eztvapi({
-  apiLimitRequests: 10,    // 10 requests
-  apiLimitInterval: 60000  // per minute
-});
-```
+const client = eztvapi.createClient();
 
-#### `options`
+async function getAllShows() {
+  let allShows = [];
+  async function fetchShows(page) {
+    const shows = await client.getShows(page);
+    allShows = [
+      ...allShows,
+      ...shows,
+    ];
 
- - `apiUrl` *(optional; default: http://eztvapi.re)*: The base URL of the API. Note that there is no slash at the end.
- - `apiLimitRequests` *(optional; default: 1)*: The maximum number of requests per a given interval.
- - `apiLimitInterval` *(optional; default: 1000)*: The duration in milliseconds
+    if (!shows.length) {
+      return allShows;
+    }
 
-### eztv.getShows(page, callback)
+    return fetchShows(page + 1);
+  }
 
-Get a list of TV shows (paginated, 50 per page).
+  const shows = await fetchShows(1);
+  return Promise.all(shows.map(show => client.getShow(show.id)));
+}
 
-```js
-var eztv = require('eztvapi')();
-var page = 1;
-
-eztv.getShows(page, function (err, shows) {
-  if (err) { return console.log('No such page or something went wrong'); }
-
-  console.log(shows);
-});
-```
-
-### stream = eztv.createShowsStream()
-
-Create a stream that emits every show.
-
-```js
-var eztv = require('eztvapi')();
-
-var stream = eztv.createShowsStream();
-
-stream.on('data', function (show) {
-  console.log(show);
-});
-
-stream.on('end', function () {
-  console.log('All done');
-});
+const shows = await getAllShows();
 
 ```
 
+## Documentation
+
+### Types
+
+#### ShowStatus
+
+```
+ShowStatus = 'returning_series' | 'in_production' | 'planned' | 'canceled' | 'ended' | 'unknown';
+```
+
+#### ShowRating
+
+```
+ShowRating = {
+  percentage: number;
+  watching: number;
+  votes: number;
+  loved: number;
+  hated: number;
+};
+```
+
+#### ShowImageSet
+
+```
+ShowImageSet = {
+  poster: ?string;
+  fanart: ?string;
+  banner: ?string;
+};
+```
+
+#### Torrent
+
+```
+Torrent = {
+  provider: ?string;
+  peers: number;
+  seeds: number;
+  url: ?string;
+};
+```
+
+#### Torrents
+
+```
+Torrents = { [key: string]: Torrent };
+```
+
+#### Episode
+
+```
+Episode = {
+  tvdbId: ?string;
+  title: ?string;
+  episode: number;
+  season: number;
+  firstAired: ?Date;
+  dateBased: boolean;
+  overview: ?string;
+  torrents: ?Torrents;
+};
+```
+
+#### ShowStub
+
+```
+ShowStub = {
+  id: string;
+  imdbId: ?string;
+  tvdbId: ?string;
+  title: string;
+  slug: string;
+  year: ?number;
+  seasons: ?number;
+  images: ShowImageSet;
+  rating: ?ShowRating;
+};
+```
+
+#### Show
+
+```
+Show = {
+  id: string;
+  imdbId: ?string;
+  tvdbId: ?string;
+  title: string;
+  slug: string;
+  year: ?number;
+  synopsis: ?string;
+  runtime: ?number;
+  country: ?string;
+  network: ?string;
+  airDay: ?string;
+  airTime: ?string;
+  status: ShowStatus;
+  seasons: ?number;
+  lastUpdated: ?Date;
+  episodes: Array<Episode>;
+  genres: Array<string>;
+  images: ShowImageSet;
+  rating: ?ShowRating;
+};
+```
+
+#### EztvApiClient
+
+```
+EztvApiClient = {
+  getShows: (pageNumber?: number) => Promise<Array<ShowStub>>;
+  getShow: (id: string) => Promise<?Show>;
+};
+```
+
+#### EztvApiClientOptions
+
+```
+EztvApiClientOptions = {
+  endpoint?: string;
+  rateLimitRequests?: number;
+  rateLimitInterval?: number;
+};
+```
+
+### API
+
+#### client = eztvapi.createClient(options?: [EztvApiClientOptions](#eztvapioptions)): [EztvApiClient](#eztvapiclient)
+
+Create a new API client.
+
+**Arguments**
+
+ - **`options`**
+   - `endpoint` _(string; optional; default: https://api-fetch.website/tv)_: HTTP or HTTPS endpoint of the API
+   - `rateLimitRequests` _(number; optional; default: 1)_ Rate limit number of requests per interval
+   - `rateLimitInterval` _(number; optional; default: 1000)_ Rate limit interval
+
+**Returns**
+
+Returns a new [EztvApiClient](#eztvapiclient) instance.
+
+**Example**
+
 ```js
-var through = require('through2').obj;
-var eztv = require('eztvapi')();
+// client with 1000 requests per minute rate limit
+const client = eztvapi.createClient({
+  rateLimitRequests: 1000,
+  rateLimitInterval: 60 * 1000,
+});
+```
 
-var shows = eztv.createShowsStream();
+#### shows = await client.getShows(pageNumber?: number): Promise<Array<[ShowStub](#showstub)>>
 
-var log = through(function (show, encoding, callback) {
+**Arguments**
+
+ - `pageNumber` _(number; optional; default: 1)_: Number of the requested page
+
+**Returns**
+
+A `Promise` that resolves with an array of [ShowStub](#showstub). Note that if
+the there are no entries on a given page it will return an empty array and not
+throw.
+
+**Example**
+
+```js
+const shows = await client.getShows(6);
+console.log(shows.map(show => show.title));
+```
+
+#### show = await client.getShow(id: string): Promise<?[Show](#show)>
+
+Get detailed information about a TV show including the list of episodes and
+magnet links.
+
+**Arguments**
+
+ - `id` _(string; required)_: The ID of the requested show
+
+**Returns**
+
+A `Promise` that resolves with a [Show](#show) object. Note that if the show
+could not be found it resolves with `null` and does not throw.
+
+**Example**
+
+```js
+const show = await client.getShow('tt0944947');
+if (show) {
   console.log(show.title);
-  callback();
-});
-
-shows
-  .pipe(log);
-```
-
-### eztv.getShow(imdbId, callback)
-
-Get information about a show including episodes and seasons by its IMDB ID (`imdb_id`).
-
-```js
-var eztv = require('eztvapi')();
-var imdbId = 'tt0944947';
-
-eztv.getShow(imdbId, function (err, show) {
-  if (err) { return console.log('No such show or something'); }
-
-  console.log(show.title);
-  // Game of Thrones
-});
-
+}
 ```
 
 ## License
 
-MIT
+Copyright (c) 2015 - 2017 Max Kueng
 
+MIT License
 
-[popcornapi]: https://github.com/popcorn-official/popcorn-api
 [popcornapi-docs]: https://github.com/popcorn-official/popcorn-api/blob/master/README.md

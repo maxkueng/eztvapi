@@ -8,23 +8,65 @@
     "popcorn",
     "popcorntime"
   ],
-  "main": "index.js",
+  "author": "Max Kueng (https://maxkueng.com/contact)",
+  "license": "MIT",
+  "homepage": "https://github.com/maxkueng/eztvapi",
   "repository": {
     "type": "git",
     "url": "git://github.com/maxkueng/eztvapi.git"
   },
-  "dependencies": {
-    "object-assign": "^2.0.0",
-    "request": "^2.51.0",
-    "through2": "^0.6.3",
-    "timetrickle": "^0.1.1"
+  "bugs": {
+    "url": "https://github.com/maxkueng/eztvapi/issues"
   },
-  "devDependencies": {},
-  "author": "Max Kueng <me@maxkueng.com> (http://maxkueng.com/)",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/maxkueng/eztvapi/raw/master/LICENSE"
-    }
-  ]
+  "main": "build/index.js",
+  "module": "build/index.es.js",
+  "jsnext:main": "build/index.es.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "clean": "rimraf build",
+    "build:js": "rollup -c rollup.config.js",
+    "build": "npm-run-all -s clean build:js",
+    "lint": "eslint src/*.js",
+    "lint:fix": "eslint --fix src/*.js",
+    "flow": "flow check",
+    "test:js": "nyc ava",
+    "run-tests": "npm-run-all -s lint flow test:js",
+    "test": "npm-run-all -s build run-tests",
+    "publish-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "prepublish": "npm-run-all -s build run-tests"
+  },
+  "devDependencies": {
+    "ava": "^0.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-syntax-flow": "^6.18.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-flow-comments": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.10.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-import": "^2.8.0",
+    "flow-bin": "^0.58.0",
+    "nock": "^9.1.4",
+    "npm-run-all": "^4.1.1",
+    "nyc": "^11.3.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.6"
+  },
+  "engines": {
+    "node": ">=6.10.0"
+  },
+  "ava": {
+    "require": "babel-register"
+  },
+  "dependencies": {
+    "axios": "^0.17.1",
+    "wyt": "^1.2.1"
+  }
 }
