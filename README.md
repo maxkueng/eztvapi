@@ -1,6 +1,12 @@
 eztvapi
 =======
 
+[![Build Status](https://travis-ci.org/maxkueng/eztvapi.svg)](https://travis-ci.org/maxkueng/eztvapi)
+[![Codebeat badge](https://codebeat.co/badges/89f4273a-fd98-46cb-a2ff-59f8ce2dc03c)](https://codebeat.co/projects/github-com-maxkueng-eztvapi-master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9906a56a9c5c4825af2e26bb1f88e384)](https://www.codacy.com/app/maxkueng/eztvapi?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=maxkueng/eztvapi&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/1c3e73fc1b904ad5f298/maintainability)](https://codeclimate.com/github/maxkueng/eztvapi/maintainability)
+[![Coverage Status](https://coveralls.io/repos/maxkueng/eztvapi/badge.svg?branch=master&service=github)](https://coveralls.io/github/maxkueng/eztvapi?branch=master)
+
 A Node.js client for the [Popcorn API][popcornapi-docs] used in PopcornTime.
 
  - [Features](#features)
