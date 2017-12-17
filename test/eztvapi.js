@@ -52,7 +52,7 @@ test('client.getShow()', async (t) => {
 });
 
 test('client.getShow() not found', async (t) => {
-  const interceptor = mock()
+  mock()
     .get('/show/lolnotfound')
   .reply(200, null);
 
