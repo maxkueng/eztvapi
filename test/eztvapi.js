@@ -54,7 +54,7 @@ test('client.getShow()', async (t) => {
 test('client.getShow() not found', async (t) => {
   mock()
     .get('/show/lolnotfound')
-  .reply(200, null);
+    .reply(200, null);
 
   const client = eztvapi.createClient();
   const show = await client.getShow('lolnotfound');
